@@ -105,27 +105,14 @@ const Index = () => {
               </Button>
             </div>
 
-            {resultado && (
-              <Alert className={resultado.valida ? "border-accent" : "border-destructive"}>
+            {resultado && resultado.valida && (
+              <Alert className="border-accent">
                 <div className="flex items-start gap-3">
-                  {resultado.valida ? (
-                    <CheckCircle2 className="w-5 h-5 text-accent mt-0.5" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-destructive mt-0.5" />
-                  )}
+                  <CheckCircle2 className="w-5 h-5 text-accent mt-0.5" />
                   <div className="flex-1 space-y-2">
                     <AlertDescription className="font-semibold">
-                      {resultado.valida ? "✓ Senha válida!" : "✗ Senha inválida"}
+                      ✓ Senha válida!
                     </AlertDescription>
-                    {resultado.erros && resultado.erros.length > 0 && (
-                      <ul className="space-y-1 text-sm">
-                        {resultado.erros.map((erro, index) => (
-                          <li key={index} className="text-muted-foreground">
-                            • {erro}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
                   </div>
                 </div>
               </Alert>
@@ -234,7 +221,10 @@ const Index = () => {
               <div>
                 <p className="text-sm font-semibold text-foreground mb-2">Response (inválida):</p>
                 <pre className="p-3 bg-muted rounded text-sm font-mono overflow-x-auto">
-{`{
+{resultado && !resultado.valida ? JSON.stringify({
+  valida: false,
+  erros: resultado.erros
+}, null, 2) : `{
   "valida": false,
   "erros": [
     "A senha deve ter no mínimo 8 caracteres",
