@@ -1,0 +1,4 @@
+project_id = "jrqdmmljvxmwkndyqywl"
+
+[functions.validar-senha]
+verify_jwt = false
