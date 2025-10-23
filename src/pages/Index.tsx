@@ -118,15 +118,17 @@ const Index = () => {
               </Alert>
             )}
 
-            <div className="pt-4 space-y-3 text-sm border-t border-border">
-              <p className="font-semibold text-foreground">Regras de validação:</p>
-              <ul className="space-y-1 text-muted-foreground">
-                <li>✓ Mínimo de 8 caracteres</li>
-                <li>✓ Pelo menos 1 letra maiúscula</li>
-                <li>✓ Pelo menos 1 número</li>
-                <li>✓ Pelo menos 1 caractere especial (!@#$%^&*)</li>
-              </ul>
-            </div>
+            {!resultado && (
+              <div className="pt-4 space-y-3 text-sm border-t border-border">
+                <p className="font-semibold text-foreground">Regras de validação:</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Mínimo de 8 caracteres</li>
+                  <li>✓ Pelo menos 1 letra maiúscula</li>
+                  <li>✓ Pelo menos 1 número</li>
+                  <li>✓ Pelo menos 1 caractere especial (!@#$%^&*)</li>
+                </ul>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -183,59 +185,55 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* API Documentation */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Code className="w-5 h-5" />
-              Documentação da API
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-2">Endpoint:</p>
-                <code className="block p-3 bg-muted rounded text-sm font-mono">
-                  POST /validar-senha
-                </code>
-              </div>
-
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-2">Request Body:</p>
-                <pre className="p-3 bg-muted rounded text-sm font-mono overflow-x-auto">
-{`{
-  "senha": "MinhaSenh@123"
-}`}
-                </pre>
-              </div>
-
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-2">Response (válida):</p>
-                <pre className="p-3 bg-muted rounded text-sm font-mono overflow-x-auto">
+        {/* API Response */}
+        {resultado && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code className="w-5 h-5" />
+                Response da API
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {resultado.valida ? (
+                <div>
+                  <p className="text-sm font-semibold text-foreground mb-2">Response (válida):</p>
+                  <pre className="p-3 bg-muted rounded text-sm font-mono overflow-x-auto">
 {`{
   "valida": true
 }`}
-                </pre>
-              </div>
-
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-2">Response (inválida):</p>
-                <pre className="p-3 bg-muted rounded text-sm font-mono overflow-x-auto">
-{resultado && !resultado.valida ? JSON.stringify({
-  valida: false,
-  erros: resultado.erros
-}, null, 2) : `{
-  "valida": false,
-  "erros": [
-    "A senha deve ter no mínimo 8 caracteres",
-    "A senha deve conter pelo menos 1 número"
-  ]
-}`}
-                </pre>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                  </pre>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm font-semibold text-foreground mb-3">Response (inválida):</p>
+                  <div className="space-y-2">
+                    {[
+                      { text: "Mínimo de 8 caracteres", check: !resultado.erros?.some(e => e.includes("8 caracteres")) },
+                      { text: "Pelo menos 1 letra maiúscula", check: !resultado.erros?.some(e => e.includes("maiúscula")) },
+                      { text: "Pelo menos 1 número", check: !resultado.erros?.some(e => e.includes("número")) },
+                      { text: "Pelo menos 1 caractere especial (!@#$%^&*)", check: !resultado.erros?.some(e => e.includes("caractere especial")) }
+                    ].map((regra, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm">
+                        {regra.check ? (
+                          <>
+                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            <span className="text-green-500">{regra.text}</span>
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="w-4 h-4 text-red-500" />
+                            <span className="text-red-500">{regra.text}</span>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
